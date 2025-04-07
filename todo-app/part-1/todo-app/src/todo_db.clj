@@ -1,6 +1,5 @@
 (ns todo-db
   (:require
-   [clojure.string :as string]
    [datomic.api :as d]))
 
 (def schema
@@ -10,20 +9,17 @@
     :db/unique      :db.unique/identity
     :db/doc         "List name"}
    {:db/ident       :list/items
-    :db/valueType   :db.type/ref
+    :db/valueType   :db.type/ref;; reference
     :db/cardinality :db.cardinality/many
     :db/doc         "List items reference"}
    {:db/ident       :item/status
-    :db/valueType   :db.type/ref
+    :db/valueType   :db.type/keyword
     :db/cardinality :db.cardinality/one
     :db/doc         "Item Status"}
    {:db/ident       :item/text
     :db/valueType   :db.type/string
     :db/cardinality :db.cardinality/one
-    :db/doc         "Item text"}
-   {:db/ident :item.status/todo}
-   {:db/ident :item.status/doing}
-   {:db/ident :item.status/done}])
+    :db/doc         "Item text"}])
 
 (def db-uri "datomic:dev://localhost:4334/todo")
 
@@ -33,23 +29,20 @@
 ;; INFO: to delete a database use `d/delete-database`
 (comment (d/delete-database db-uri))
 
-;; INFO: Establish connection to the database
+;; Connect to the database
 (def conn (d/connect db-uri))
 
 (comment @(d/transact conn schema))
 
-(defn ensure-schema
-  "verify that schema is transacted"
-  [conn]
-  (or (-> conn d/db (d/entid :list/name))
-      @(d/transact conn schema)))
+(defn new-list
+  "receives a `list-name` and returns a new List datom."
+  [list-name]
+  {:list/name list-name})
 
-(defn new-list [list-name]
-  [:db/add "list.id" :list/name list-name])
-
-(defn new-item [db list-name item-text]
-  (let [minify (string/replace item-text #" " "-")]
-    {:db/id (d/entid db [:list/name list-name])
-     :list/items [{:db/id  (str "item.temp." minify)
-                   :item/text item-text
-                   :item/status :item.status/todo}]}))
+(defn new-item
+  "recives a `db` a `list-name` and the `item-text` and returns a map form of datoms to add items to a list."
+  [db list-name item-text]
+  {:db/id (d/entid db [:list/name list-name])
+   :list/items [{:db/id (d/tempid :db.part/user)
+                 :item/text item-text
+                 :item/status :item.status/todo}]})
