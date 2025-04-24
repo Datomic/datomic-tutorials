@@ -1,5 +1,5 @@
 { :deps {org.clojure/clojure {:mvn/version "1.12.0"}
-         com.datomic/peer {:mvn/version "1.0.7277"}
+         com.datomic/peer {:mvn/version "1.0.7260"}
          io.pedestal/pedestal.jetty {:mvn/version "0.7.1"}
          org.slf4j/slf4j-simple {:mvn/version "2.0.10"}
          hiccup/hiccup {:mvn/version "2.0.0-RC3"}}}

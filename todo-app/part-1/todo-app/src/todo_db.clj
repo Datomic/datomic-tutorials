@@ -32,7 +32,10 @@
 ;; Connect to the database
 (def conn (d/connect db-uri))
 
-(comment @(d/transact conn schema))
+(defn transact-schema
+  "receives a `schema` and transacts it"
+  [schema]
+  @(d/transact conn schema))
 
 (defn new-list
   "receives a `list-name` and returns a new List datom."
@@ -46,3 +49,29 @@
    :list/items [{:db/id (d/tempid :db.part/user)
                  :item/text item-text
                  :item/status :item.status/todo}]})
+
+;; Get lists and their names
+(d/q '[:find ?list-name
+       :in $
+       :where [?list :list/name ?list-name]]
+  (d/db conn))
+
+;; Get lists + items
+(d/q '[:find ?list-name ?items
+       :in $
+       :where [?list :list/name ?list-name]
+              [?list :list/items ?items]]
+  (d/db conn))
+
+;; Get lists + items different version
+(d/q '[:find ?list-name (vec ?items)
+       :in $
+       :where [?list :list/name ?list-name]
+              [?list :list/items ?items]]
+     (d/db conn))
+
+;; Get lists + items using pull
+(d/q '[:find (pull ?list [:list/name {:list/items [:item/text]}])
+       :in $
+       :where [?list :list/name ?list-name]]
+     (d/db conn))
