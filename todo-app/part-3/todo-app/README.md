@@ -1,11 +1,11 @@
 # Building a TODO List App with Clojure + Datomic Pro - [Part 3]
 
-In [Part 2](../../part-2/todo-app/README.md) we completed the following:
+In [Part 2](../../part-2/todo-app/README.md), we completed the following:
 
 - Serve a website with Pedestal and Hiccup
 - Create a query to load the List and Items
 
-Part 3 is about CRUD, you will explore the t/transact API to create, update and delete entities (List, Items). These are the actions that we want to support.
+Part 3 is about CRUD. You will explore the _t/transact_ API to create, update and delete entities (such as List and Items). These are the actions that we want to support:
 
 - Create list
 - Delete list
@@ -13,8 +13,7 @@ Part 3 is about CRUD, you will explore the t/transact API to create, update and 
 - Delete item
 - Update item status
 
-### Building the app
-
+### Building the App
 
 #### Create and Delete Lists
 
@@ -29,7 +28,7 @@ clj
 user>
 ```
 
-As we are using native HTML we will user `forms` to make requests to the server. The form does a POST to `/lists` and it will include `new-list` argument with the name of the list
+As we are using native HTML, we will use `forms` to make requests to the server. The form does a POST to `/lists` and it will include `new-list` argument with the name of the list.
 
 ```clojure
 (def new-list-form
@@ -38,7 +37,7 @@ As we are using native HTML we will user `forms` to make requests to the server.
   [:div {:class "col"} [:input {:type "submit" :value "new list" :class "btn btn-secondary btn-s"}]]])
 ```
 
-The form does a POST to `/lists` and it will include `new-list` argument with the name of the list. Add the function to `src/server.clj`
+Add the function to `src/server.clj`:
 
 ```clojure
 (ns server
@@ -122,18 +121,18 @@ The form does a POST to `/lists` and it will include `new-list` argument with th
   (start-server))
 ```
 
-Load the file to the REPL and `(start-server)`
+Load the file to the REPL and `(start-server)`:
 
 ```clojure
 ;; Result
 (start-server)
 ```
 
-navigate to http://localhost:8890/ in the browser, you should see the new list text box area.
+Navigate to http://localhost:8890/ in the browser, where you should see the new list text box area.
 
 ![](assets/new-list.png)
 
-Receive the request in Pedestal routes and create a new list with the name received by the form. Add `[io.pedestal.http.body-params :as body-params]`in the `:require`, that namespace contains a function to parse `form-params` and it's used inside the routes. 
+Receive the request in Pedestal routes and create a new list with the name received by the form. Add `[io.pedestal.http.body-params :as body-params]`in the `:require`. That namespace contains a function to parse `form-params` and it's used inside the routes. 
 
 ```clojure
 (def routes
@@ -142,9 +141,9 @@ Receive the request in Pedestal routes and create a new list with the name recei
      ["/lists" :post [(body-params/body-params) new-list] :route-name :new-list]})) ;; new
 ```
 
-*learn more about [Pedestal interceptors](https://pedestal.io/pedestal/0.7/guides/defining-routes.html#_interceptors)*
+*Learn more about [Pedestal interceptors](https://pedestal.io/pedestal/0.7/guides/defining-routes.html#_interceptors)*
 
-Interceptors are functions that can be composed, they receive the request context and the last function is a handler that will return the final response. In this case it's `new-list` , let's create it.
+Interceptors are functions that can be composed. They receive the request context and the last function is a handler that will return the final response. In this case, it's `new-list`, so let's create it.
 
 ```clojure
 (def html-302-response
@@ -158,9 +157,9 @@ Interceptors are functions that can be composed, they receive the request contex
     html-302-response))
 ```
 
-the function receives the the context from the Pedestal request, it access to the form-params and reads the `:new-list` key that contains the name inputted in the UI. Then it proceeds to transact to Datomic. The 302 status is returned because we want to comeback to the initial page and not to the path where the POST was made.
+The function receives the the context from the Pedestal request and access to the form-params. It reads the `:new-list` key that contains the name inputted in the UI. Then it proceeds to transact to Datomic. The 302 status is returned because we want to comeback to the initial page and not to the path where the POST was made.
 
-Add the function to `src/server.clj` 
+Add the function to `src/server.clj`:
 
 ```clojure
 (ns server
@@ -256,24 +255,24 @@ Add the function to `src/server.clj`
   (start-server))
 ```
 
-load the file to the REPL and `(restart-server)`
+Load the file to the REPL and `(restart-server)`:
 
 ```clojure
 ;; REPL
 (restart-server)
 ```
 
-now let's got to http://localhost:8890/ , we should see something like this.
+Now, let's got to http://localhost:8890/, where we should see something like this:
 
 GIF of creating a new list
 
-Great, let's move on to `retraction` to represent the deletion of a list. For that we will [:retractEntity](https://docs.datomic.com/transactions/transaction-functions.html#dbfn-retractentity) function, it will receive the listeid and  itt retracts all the attribute values where the given entity id is either the entity or value, effectively retracting the entity's own data and any references to the entity as well.
+Great, let's move on to `retraction` to represent the deletion of a list. For that we will use the [:retractEntity](https://docs.datomic.com/transactions/transaction-functions.html#dbfn-retractentity) function. It will receive the _listeid_ and it retracts all the attribute values where the given entity _id_ is either the entity or value, effectively retracting the entity's own data and any references to the entity as well.
 
 ```clojure
 (defn retract-list [listeid]
   [:db/retractEntity listeid])
 ```
-it's all about Datoms, we need to pass it to `d/transact`
+It's all about Datoms. Pass it to `d/transact`:
 
 ```clojure
 (defn retract-list [{:keys [path-params] :as _request}]
@@ -282,7 +281,7 @@ it's all about Datoms, we need to pass it to `d/transact`
     html-302-response))
 ```
 
-then add the route and call the function
+Then add the route and call the function:
 
 ```clojure
 (def routes
@@ -294,7 +293,7 @@ then add the route and call the function
 
 ### Create and Delete Items
 
-It's the same idea for the items, you need to add a transaction to add the new Datoms and a retraction to remove the item. Here is a list of the things that we will do
+It's the same idea for the items. Add a transaction to add the new Datoms and a retraction to remove the item. Here is a list of the things that we will do:
 
 - Create a `new-item` function in the server.clj file.
 - Add the `lists/:list-id/items/:item-id` route and call `new-item` handler function.
@@ -302,7 +301,7 @@ It's the same idea for the items, you need to add a transaction to add the new D
 - Create a `retract-item` function in the server.clj file.
 - Add the `lists/:list-id/items/:item-id/delete` route and call `retract-item` handler function.
 
-Let's start with the creation of new items
+Let's start with the creation of new items.
 
 ```clojure
 (defn new-item [{:keys [path-params form-params] :as _request}]
@@ -312,9 +311,9 @@ Let's start with the creation of new items
     html-302-response))
 ```
 
-In the `path-params` we have access to the `listeid` and the current `todo-db/new-item` function expects the name, go to `src/todo_db.clj` and modify the new-item function to receive the `listeid` instead of the name
+In the `path-params`, we have access to the `listeid` and the current `todo-db/new-item` function expects the name. Go to `src/todo_db.clj` and modify the _new-item_ function to receive the `listeid` instead of the name.
 
-from 
+From:
 
 ```clojure
 (defn new-item [db list-name item-text]
@@ -325,7 +324,7 @@ from
                    :item/status :item.status/waiting}]}))
 ```
 
-to
+To:
 
 ```clojure
 (defn new-item [db listeid item-text] ;; list-name -> listeid
@@ -336,7 +335,7 @@ to
                    :item/status :item.status/waiting}]}))
 ```
 
-make sure to load the changes of `todo_db.clj` to the REPL. Now let's move to `src/server.clj` and add the route
+Make sure to load the changes of `todo_db.clj` to the REPL. Now let's move to `src/server.clj` and add the route.
 
 ```clojure
 (def routes
@@ -347,7 +346,7 @@ make sure to load the changes of `todo_db.clj` to the REPL. Now let's move to `s
      ["/lists/:list-id/items" :post [(body-params/body-params) new-item] :route-name :new-item]})) ;; new
 ```
 
-to finish the creation of the item, add the new item form 
+To finish the creation of the item, add the new item form.
 
 ```clojure
 (defn new-item-form [list-id]
@@ -358,7 +357,7 @@ to finish the creation of the item, add the new item form
    [:div {:class "col"} [:input {:type "submit" :value "add" :class "btn btn-light btn-s"}]]])
 ```
 
-and place it below the `[:h4 {:class "card-title"} list-name]`
+Place it below the `[:h4 {:class "card-title"} list-name]`:
 
 ```clojure
 (defn all-lists-page
@@ -396,27 +395,27 @@ and place it below the `[:h4 {:class "card-title"} list-name]`
                 [:span {:class "badge text-bg-light"} item-status]]])]]]])]])))
 ```
 
-load the file to the REPL and `(restart-server)`
+Load the file to the REPL and `(restart-server)`:
 
 ```clojure
 ;; REPL
 (restart-server)
 ```
 
-go to http://localhost:8890/ 
+Go to http://localhost:8890/:
 
 ADD GIF adding a new item
 
-##### Retract item
+##### Retract Item
 
-Go to `src/todo_db.clj` and add the `retract-item` function
+Go to `src/todo_db.clj` and add the `retract-item` function.
 
 ```clojure
 (defn retract-item [itemeid]
   [:db/retractEntity itemeid])
 ```
 
-And call it from `src/server.clj` 
+Call it from `src/server.clj`:
 
 ```clojure
 (defn retract-item [{:keys [path-params] :as _request}]
@@ -425,7 +424,7 @@ And call it from `src/server.clj`
     html-302-response))
 ```
 
-Now add the function call in the routes
+Now, add the function call in the routes:
 
 ```clojure
 (def routes
@@ -437,7 +436,7 @@ Now add the function call in the routes
      ["/lists/:list-id/items/:item-id/retract" :post [(body-params/body-params) retract-item] :route-name :retract-item]}))
 ```
 
-finally add the Hiccup form to retract. For that add one more column to the table named `actions` here we will place the retract button and the transition to a different status.
+Finally, add the Hiccup form to retract. Add one more column to the table named `actions`. Put the retract button here for the transition to a different status.
 
 ```clojure
 (defn all-lists-page
@@ -482,22 +481,22 @@ finally add the Hiccup form to retract. For that add one more column to the tabl
                      [:input {:type "submit" :value "X" :class "btn btn-sm btn-danger"}]]]]]])]]]])]])))
 ```
 
-load the file to the REPL and `(restart-server)`
+Load the file to the REPL and `(restart-server)`:
 
 ```clojure
 ;; REPL
 (restart-server)
 ```
 
-go to http://localhost:8890/  and refresh
+Go to http://localhost:8890/ and refresh.
 
 ADD GIF DELETING ITEM
 
-#### Update Item status
+#### Update Item Status
 
-This section is about the transition of the Item status, we have three options `waiting`, `doing` ,`done`. We will show a dropdown button that allows you to choose the desired status and then make the request to the server. The server will receive the request then call the handler then make the transaction to the database and return 302 to make the refresh of the main page.
+This section is about the transition of the Item status. We have three options: `waiting`, `doing` and `done`. We will show a dropdown button that allows the user to choose the desired status and then make the request to the server. The server will receive the request, then call the handler, then make the transaction to the database and return 302 to make the refresh of the main page.
 
-Go to `src/todo_db.clj` and add the `transition-item` function
+Go to `src/todo_db.clj` and add the `transition-item` function:
 
 ```clojure
 (def namespace-status (comp keyword (partial str "item.status/")))
@@ -506,9 +505,9 @@ Go to `src/todo_db.clj` and add the `transition-item` function
   [:db/add itemeid :item/status (namespace-status to-status)])
 ```
 
-when we receive the status in the HTTP request it comes as string and without the `item.status` namespace, to adapt it so that it conveys with our defined schema enums we need to add the `item.status` namespace and convert it to a keyword. `namespace-status` function does that.
+When we receive the status in the HTTP request, it comes as string and without the `item.status` namespace. To adapt it so that it aligns with our defined schema enums, we need to add the `item.status` namespace and convert it to a keyword. The `namespace-status` function does that.
 
-Load the file to the REPL and move to `src/server.clj`. Now create the `transition-item` handler function
+Load the file to the REPL and move to `src/server.clj`. Now create the `transition-item` handler function:
 
 ```clojure
 (defn transition-item [{:keys [path-params form-params] :as _request}]
@@ -518,7 +517,7 @@ Load the file to the REPL and move to `src/server.clj`. Now create the `transiti
     html-302-response))
 ```
 
-add the Pedestal route
+Add the Pedestal route:
 
 ```clojure
 (def routes
@@ -531,7 +530,7 @@ add the Pedestal route
      ["/lists/:list-id/items/:item-id/transition" :post [(body-params/body-params) transition-item] :route-name :transition-item]}))
 ```
 
-finally add the form in the Hiccup code
+Finally, add the form in the Hiccup code:
 
 ```clojure
 (defn todo-statuses-form [list-name todo]
@@ -548,7 +547,7 @@ finally add the form in the Hiccup code
     [:input {:type "submit" :value "ok" :class "btn btn-sm btn-secondary "}]]])
 ```
 
-then add it ito `all-lists-page`
+Then add it ito `all-lists-page`:
 
 ```clojure
 (defn all-lists-page
@@ -595,13 +594,13 @@ then add it ito `all-lists-page`
                     [:input {:type "submit" :value "X" :class "btn btn-sm btn-danger"}]]]]]])]]]])]])))
 ```
 
-load the file to the REPL and `(restart-server)` then go to http://localhost:8890/ and refresh
+Load the file to the REPL and `(restart-server)`, then go to http://localhost:8890/ and refresh.
 
 ADD GIF of UPDATE
 
 ### Final Code 
 
-You can see the code in [src/server.clj](src/server.clj) and  [src/todo_db](src/todo_db). Also here is the final version of both files after all the code blocks seen in the tutorial
+You can see the code in [src/server.clj](src/server.clj) and [src/todo_db](src/todo_db). You can also see the final version of both files here:
 
 ```clojure
 (ns server
