@@ -42,13 +42,13 @@ Java(TM) SE Runtime Environment Oracle GraalVM 21.0.4+8.1 (build 21.0.4+8-LTS-jv
 Java HotSpot(TM) 64-Bit Server VM Oracle GraalVM 21.0.4+8.1 (build 21.0.4+8-LTS-jvmci-23.1-b41, mixed mode, sharing)
 ```
 
-It should work with Java 8, 11, 17 and 21
+It should work with Java 8, 11, 17 and 21.
 
-### Before you start
+### Before You Start
 
-This tutorial expects that you're familiar with Clojure and progamming at REPL. If you are totally new to Clojure, you should seek out some more introductory content before coming back here.  Clojure is the absolute most important requirement to use Datomic effectively, the better you get at the language the better you'll get at using Datomic.
+This tutorial expects that you're familiar with Clojure and progamming at REPL. If you are totally new to Clojure, you should seek out some more introductory content before coming back here. Clojure is the absolute most important requirement to use Datomic effectively, the better you get at the language the better you'll get at using Datomic.
 
-Here is a suggestion of content:
+Some suggestions to learn more about Clojure:
 
 - [Learn Clojure](https://clojure.org/guides/learn/clojure)
 - [Clojure destructuring](https://clojure.org/guides/destructuring)
@@ -57,9 +57,9 @@ Here is a suggestion of content:
 - [Clojure for](https://clojuredocs.org/clojure.core/for)
 - [Programming at REPL](https://clojure.org/guides/repl/introduction)
 
-The tutorial can be followed through the REPL in the terminal, if you have  your [editor](https://clojure.org/guides/editors) environment to interact with a Clojure REPL run the REPL examples inside your editor.
+You can follow the tutorial through the REPL in the terminal. If you have your [editor](https://clojure.org/guides/editors) environment set up to interact with a Clojure REPL, run the REPL examples inside your editor.
 
-We highly recommend to spend time to setup your [editor](https://clojure.org/guides/editors) environment to interact with a Clojure REPL. If you are able to do the following you should be good to go.
+We highly recommend spending time to set up your [editor](https://clojure.org/guides/editors) environment to interact with a Clojure REPL. You should be good to go if you can do the following:
 
 - Start a REPL and connect it to your editor.
 - Evaluate Clojure code from a file(namespace) to the REPL.
@@ -67,7 +67,7 @@ We highly recommend to spend time to setup your [editor](https://clojure.org/gui
 
 ### Glossary
 
-If at any point some word it’s not clear or was left out from clear explanation the official glossary offers a semantically description.
+If at any point you're not clear about the meaning of a term, the official glossary offers semantic descriptions.
 
 [![img](https://docs.datomic.com/impl/favicon.ico) Glossary | Datomic](https://docs.datomic.com/glossary.html?search=da#datom)
 
@@ -175,20 +175,20 @@ Let's make sure we have the dependencies we need, add the following to `deps.edn
 ```
 For now, we'll focus in the `com.datomic/peer` library. The rest will come handy when building the browser UI.
 
-In the terminal that we created the project structure run
+In the terminal that we created the project structure, run:
 
 ```shell
 clj
 ```
 
-and a REPL will appear, that means that the dependencies are downloaded correctly
+A REPL will appear, which means that the dependencies are downloaded correctly.
 
 ```shell
 Clojure 1.12.0 ;; the version might be different in your machine.
 user=>
 ```
 
-Alternatively you can start the REPL in your editor, **this is the recommended way**.
+Alternatively, you can start the REPL in your editor. **This is the recommended way.**
 
 #### Schema
 
@@ -196,7 +196,7 @@ Let's think about a schema that will help us get something working.
 
 > Lists has many items
 
-That's it, we don't need anything else. Just `List` and `Item` entities.
+That's it, we don't need anything else! Just `List` and `Item` entities.
 
 ```clojure
 (def schema
@@ -228,7 +228,7 @@ We'll do `:list/items` a [cardinality](https://docs.datomic.com/schema/schema-re
 
 The Datomic Peer API names databases with a URI that includes the protocol name, storage connection information, and a database name. The complete URI for a database named "todo" on the transactor you started in the previous step is `datomic:dev://localhost:4334/todo`.
 
-Inside `src/todo_db.clj` add this code.
+Inside `src/todo_db.clj`, add this code.
 
 ```clojure
 (ns todo-db
@@ -269,7 +269,7 @@ Inside `src/todo_db.clj` add this code.
 (def conn (d/connect db-uri))
 ```
 
-Load the file to the REPL and then [navigate](https://clojure.org/guides/repl/navigating_namespaces) to the `todo-db` namespace in the REPL. Once there run the following code in the REPL.
+Load the file to the REPL and then [navigate](https://clojure.org/guides/repl/navigating_namespaces) to the `todo-db` namespace in the REPL. Once there, run the following code in the REPL:
 
 ```clojure
 ;; REPL
@@ -283,6 +283,7 @@ Load the file to the REPL and then [navigate](https://clojure.org/guides/repl/na
 todo-db>
 ```
 Now we need to load the code that we have in the file to the REPL. Every time we change some code in the file we will need to run the `use` function to load the latest changes.
+
 > If you are using your editor REPL, you can ignore this and make sure to load the code to the REPL.
 
 ```clojure
@@ -292,6 +293,7 @@ Now we need to load the code that we have in the file to the REPL. Every time we
 The result should be something like this, two important things occurred.
   1. The database is created `(d/create-database db-uri)`
   2. Connection is stablished `(def conn (d/connect db-uri))`
+
 ```clojure
 ;; Result
 [main] INFO datomic.process-monitor - {:event :metrics/initializing, :metricsCallback clojure.core/identity, :phase :begin, :pid 40809, :tid 1}
@@ -339,9 +341,9 @@ Transact the schema with [d/transact](https://docs.datomic.com/clojure/index.htm
             -9223300668110598104 17592186045419}}
 ```
 
-> Datomic supports online schema evolution, meaning you can modify schema while the system is running. No DB downtime to transact schema changes. As we just did, to add novelty to the schema is like transacting other data.
+> Datomic supports online schema evolution, meaning you can modify schema while the system is running. No DB downtime to transact schema changes. Adding novelty to the schema, as we just did, is like transacting other data.
 
-With the schema transacted we are able to store some lists and items. For that we'll create a function `new-list` that receives a *list-name* and returns a [datom](https://docs.datomic.com/glossary.html#datom) that we'll use to transact a new List.
+With the schema transacted, we are able to store some lists and items. For that, we'll create a function `new-list` that receives a *list-name* and returns a [datom](https://docs.datomic.com/glossary.html#datom) that we'll use to transact a new List.
 
 Add the `new-list` function to `todo_db.clj` file and save.
 ```clojure
@@ -362,7 +364,8 @@ To have the `new-list` function available in the REPL, it's necessary to reload 
 
 #### Transact a New List
 
-Now transact a new list with name "life"
+Now, transact a new list with name "life":
+
 ```clojure
 ;; REPL
 @(d/transact conn [(new-list "life")])
@@ -377,14 +380,15 @@ Now transact a new list with name "life"
 ```
 
 Let's breakdown the result, in Datomic is called `tx-report`.
+
 - `:db-before` = database value before the transaction
 - `:db-after` = database value after the transaction
 - `:tx-data` = datoms produced by the transaction
 - `:tempids` = tempid resolution, from the string we chose to the actual value in the database.
 
-The tx-report enables straight forward comparisons between before/after data is transacted, and we can use the db-before to make queries to the past.
+The `tx-report` enables straight forward comparisons between before/after data is transacted, and we can use the db-before to make queries to the past.
 
-To showcase a quick example of that, create another list `learn`, but this time we are going to save the result in a var and then access to the result values.
+To showcase a quick example of that, create another list called `learn`—but this time we are going to save the result in a var and then access to the result values.
 
 ```clojure
 ;; REPL
@@ -414,15 +418,16 @@ To showcase a quick example of that, create another list `learn`, but this time 
 #{}
 ```
 
-With the result of `(def tx-report-learn @(d/transact conn [(new-list "learn")])`, you can run the same query with `(:db-after tx-report-learn)` or `(:db-before tx-report-learn)`, the first returns the eid of the list in the database, the second is empty because at that point in time the list didn't existed. This is a simple example of the **out-of-the-box** support for making queries at different moments of time, we'll do more later in the tutorial.
+With the result of `(def tx-report-learn @(d/transact conn [(new-list "learn")])`, you can run the same query with `(:db-after tx-report-learn)` or `(:db-before tx-report-learn)`, the first returns the _eid_ of the list in the database, the second is empty because at that point in time the list didn't exist. This is a simple example of the **out-of-the-box** support for making queries at different moments of time. We'll do more later in the tutorial.
 
-*learn more about [Datomic time model](https://docs.datomic.com/whatis/data-model.html#time-model)*
+*Learn more about [Datomic time model](https://docs.datomic.com/whatis/data-model.html#time-model)*
 
 #### Transact New Items
 
-With a list transacted, let's start adding some items. We'll follow the same pattern: create a function `new-item` that receives a *list-name* and the todo string. We are also including the [db](https://docs.datomic.com/glossary.html#database) as we want to get the eid of the list to make the correct relationship.
+With a list transacted, let's start adding some items. We'll follow the same pattern: create a function `new-item` that receives a *list-name* and the todo string. We are also including the [db](https://docs.datomic.com/glossary.html#database) since we want to get the _eid_ of the list to make the correct relationship.
 
-Add `new-item` function to `todo_db.clj`
+Add `new-item` function to `todo_db.clj`:
+
 ```clojure
 (defn new-item [db list-name item-text]
   {:db/id (d/entid db [:list/name list-name])
@@ -431,9 +436,9 @@ Add `new-item` function to `todo_db.clj`
                  :item/status :item.status/waiting}]})
 ```
 
-In this function, we are making use of [map forms](https://docs.datomic.com/transactions/transaction-data-reference.html#map-forms) as a shorthand for set of additions.
+In this function, we are using [map forms](https://docs.datomic.com/transactions/transaction-data-reference.html#map-forms) as a shorthand for set of additions.
 
-The tempid ("item.temp") is for the item entity because the list is persisted in the database and we must use the eid, otherwise it will create a new list. To get the eid of an entity we can use `d/entid` function that receives a db and a [lookup ref](https://docs.datomic.com/schema/identity.html#lookup-refs).
+The tempid ("item.temp") is for the item entity because the list persists in the database. Use the _eid_, otherwise it will create a new list. To get the _eid_ of an entity, use the `d/entid` function, which receives a db and a [lookup ref](https://docs.datomic.com/schema/identity.html#lookup-refs).
 
 Make sure to **load the file to the REPL**, using `(use 'todo-db :reload)`. Then run the following in the REPL.
 
@@ -449,7 +454,8 @@ Make sure to **load the file to the REPL**, using `(use 'todo-db :reload)`. Then
  :tx-data [#datom[13194139534320 50 #inst "2025-02-26T19:08:17.539-00:00" 13194139534320 true] #datom[17592186045421 73 17592186045425 13194139534320 true] #datom[17592186045425 75 "travel" 13194139534320 true] #datom[17592186045425 74 17592186045417 13194139534320 true]],
  :tempids {"item.temp.travel" 17592186045425}}
 ```
-let's populate it with more data to run some exploration queries.
+
+Let's populate it with more data to run some exploration queries.
 
 ```clojure
 ;; REPL
@@ -459,7 +465,7 @@ let's populate it with more data to run some exploration queries.
      (d/transact conn))
 ```
 
-It fails. The error below is the exception. Is telling us that we are trying to persist two datoms with the same eid.
+It fails. The error below is the exception. Is telling us that we are trying to persist two datoms with the same _eid_.
 
 ```clojure
    {:cause ":db.error/datoms-conflict Two datoms in the same transaction conflict\n{:d1 [17592186045427 :item/text \"play drums\" 13194139534322 true],\n :d2 [17592186045427 :item/text \"scuba dive\" 13194139534322 true]}\n"
@@ -470,7 +476,7 @@ It fails. The error below is the exception. Is telling us that we are trying to 
  :tempids {"item.temp" 17592186045427}}} ;; Here is the tempid
 ```
 
-Current *new-item* function
+Current *new-item* function:
 
 ```clojure
 (defn new-item [db list-name item-text]
@@ -480,7 +486,7 @@ Current *new-item* function
                  :item/status :item.status/waiting}]})
 ```
 
-We are generating many items in the same transaction and the tempid needs to be different for each item, otherwise Datomic resolves to the same entity. Let's fix it.
+We are generating many items in the same transaction and the tempid needs to be different for each item; otherwise Datomic resolves to the same entity. Let's fix that.
 
 Change the function in `todo-db.clj`
 ```clojure
@@ -492,7 +498,7 @@ Change the function in `todo-db.clj`
                    :item/status :item.status/waiting}]}))
 ```
 
-Load the file to the REPL and then run
+Load the file to the REPL and then run:
 
 ```clojure
 ;; REPL
@@ -561,7 +567,7 @@ Add items to the `learn` list.
 
 Datomic uses [Datalog](https://docs.datomic.com/whatis/supported-ops.html#datalog) as query engine. A query finds [values ](https://docs.datomic.com/glossary.html#value)in a [database ](https://docs.datomic.com/glossary.html#database) subject to the given constraints, and is specified as [edn](https://docs.datomic.com/glossary.html#edn). Queries are modeled following the same pattern of a Datom `[e a v t]`, if we understand this structure queries can become very powerful.
 
-Currently we transacted 2 lists and a few items. Let's start with some simple queries to get things going.
+Currently, we transacted 2 lists and a few items. Let's start with some simple queries to get things going.
 
 - **Get lists and their names**
 
@@ -594,7 +600,9 @@ Currently we transacted 2 lists and a few items. Let's start with some simple qu
   #{["life" 17592186045425] ["life" 17592186045429] ["life" 17592186045428] ["life" 17592186045427] ["learn" 17592186045431] ["learn" 17592186045432] ["learn" 17592186045433] ["learn" 17592186045434]}
   ```
 
-  What's with that result? A set of vectors repeating the list name? similar to Clojure, at first glance looks different and it's because it is a different way to interact with a database. Let's break it down, first thing we see is the repeating of list name e.g `["life" 17592186045425]` and the same case for "*life*". Our schema is defined as `:db.cardinality/many` on the `:list/items` attribute, in other words we are allowing many items being referenced by `:list/items`, that makes the result make sense, it's telling us that the list "life" has many items, each one being a reference.
+  What's with that result? A set of vectors repeating the list name? It's similar to Clojure, but at first glance looks different. This is because it's a different way to interact with a database. Let's break that down.
+
+  The first thing we see is the repeating of list name e.g `["life" 17592186045425]` and the same case for "*life*". Our schema is defined as `:db.cardinality/many` on the `:list/items` attribute, in other words we are allowing many items being referenced by `:list/items`. That makes the result make sense. It's telling us that the list "life" has many items, each one a reference.
 
 - **Get lists + items different version**
 
@@ -613,7 +621,7 @@ Currently we transacted 2 lists and a few items. Let's start with some simple qu
    ["life" [17592186045425 17592186045429 17592186045428 17592186045427]]]
   ```
 
-  The difference is `(vec ?items)` which is grouping all of the items of a list. Also the items are numbers and that is because we are just pulling the reference number to the entity (eid), if we want to get the attributes of the Item we need to ask that explicitly.
+  The difference is `(vec ?items)`, which is grouping all of the items of a list. The items are also numbers, which is because we are just pulling the reference number to the entity (_eid_). If we want to get the attributes of the Item, we need to ask for that explicitly.
 
   **Get lists + items using pull**
 
@@ -639,17 +647,18 @@ Currently we transacted 2 lists and a few items. Let's start with some simple qu
                       #:item{:text "cook rissotto"}]}]]
   ```
 
-In this query [pull](https://docs.datomic.com/query/query-pull.html) is very handy as we want to make an association of datoms related to the same entity.
+In this query, [pull](https://docs.datomic.com/query/query-pull.html) is very handy because we want to make an association of datoms related to the same entity.
 
-#### Connecting the dots
+#### Connecting the Dots
 
 So far we have:
-- An initial schema.
-- A function to create new lists.
-- A function to create new items.
-- Some queries to fetch the state of the database.
 
-With some embellishment of the code, we can have this initial `src/todo_db.clj` file
+- An initial schema
+- A function to create new lists
+- A function to create new items
+- Some queries to fetch the state of the database
+
+With some embellishment of the code, we can have this initial `src/todo_db.clj` file:
 
 ```clojure
 (ns todo-db
@@ -702,9 +711,10 @@ With some embellishment of the code, we can have this initial `src/todo_db.clj` 
                    :item/status :item.status/waiting}]}))
 ```
 
-That's it for now, in [part 2](../../part-2/todo-app/README.md) we will do CRUD for Lists and Items. We'll create a UI and render the todo lists and items, that will be served by a Pedestal HTTP server and the HTML and CSS by Hiccup.
+That's it for now! In [part 2](../../part-2/todo-app/README.md), we will do CRUD for Lists and Items. We'll create a UI and render the todo lists and items, served by a Pedestal HTTP server with HTML and CSS by Hiccup.
 
 ## References
+
 - [Datomic - docs](https://docs.datomic.com/datomic-overview.html)
 - [Datomic - pull](https://docs.datomic.com/query/query-pull.html)
 - [Datomic - defining a schema](https://docs.datomic.com/schema/schema-reference.html#defining-schema)
