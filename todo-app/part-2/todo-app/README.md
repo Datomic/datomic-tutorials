@@ -7,11 +7,11 @@ In [Part 1](../../part-1/todo-app/README.md), we completed the following:
 - Transact new data
 - Explore query API in the REPL
 
-This part of the tutorial is shorter and more pragmatic than the previous one. You will build a simple HTML & CSS website that will render the List and Items that are in Datomic database.
+This part of the tutorial is shorter and more pragmatic than the previous one. You will build a simple HTML & CSS website that will render the List and Items that are in the Datomic database.
 
-### Building the app
+## Building the App
 
-#### Project structure
+### Project Structure
 
 Create the file inside `src/server.clj`. The full project structure will look like this.
 ```
@@ -22,25 +22,25 @@ Create the file inside `src/server.clj`. The full project structure will look li
     └── todo_db.clj
 ```
 
-If you come from [part 1](../part-1), in the same terminal where you created the project run the following command or create the file inside your text editor.
+If you came from [part 1](../part-1), run the following command in the same terminal where you created the project, or create the file inside your text editor.
 
 ```shell
 touch src/server.clj
 ```
 
-#### Create a simple UI
+### Create a Simple UI
 
 The next step is to display the database's data in the browser with a simple UI. To render data in the browser, we'll use two more libraries, [Pedestal](http://pedestal.io/pedestal/0.7/index.html), for HTTP server, and [Hiccup](https://github.com/weavejester/hiccup), for HTML rendering. 
 
 ![](assets/part2.png)
 
-Essentially we need to make a query that will provide us with the data needed to convey the image above.
+Essentially, we need to make a query that will provide us with the data needed to convey the image above.
 
 First, create the HTTP server and the [Hiccup](https://github.com/weavejester/hiccup/wiki/Syntax) skeleton, then we will populate it with the results from querying Datomic.
 
 **Pedestal routes**
 
-Write the following functions inside `src/server.clj`
+Write the following functions inside `src/server.clj`:
 
 ```clojure
 (ns server
@@ -82,7 +82,7 @@ Write the following functions inside `src/server.clj`
 
 *more about [Pedestal routes](http://pedestal.io/pedestal/0.7/guides/defining-routes.html)*
 
-Run `(start-server)` in the REPL
+Run `(start-server)` in the REPL:
 
 ```clojure
 ;;REPL
@@ -94,11 +94,11 @@ Run `(start-server)` in the REPL
 #:io.pedestal.http{:port 8890, :service-fn #function[io.pedestal.http.impl.servlet-interceptor/interceptor-service-fn/fn--23980], :host "localhost", :secure-headers {:content-security-policy-settings "object-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:;"}, :type :jetty, :start-fn #function[io.pedestal.http.jetty/server/fn--24550], :interceptors [#Interceptor{:name :io.pedestal.http.tracing/tracing} #Interceptor{:name :io.pedestal.http/log-request} #Interceptor{:name :io.pedestal.http/not-found} #Interceptor{:name :io.pedestal.http.ring-middlewares/content-type-interceptor} #Interceptor{:name :io.pedestal.http.route/query-params} #Interceptor{:name :io.pedestal.http.route/method-param} #Interceptor{:name :io.pedestal.http.secure-headers/secure-headers} #Interceptor{:name :io.pedestal.http.route/router} #Interceptor{:name :io.pedestal.http.route/path-params-decoder}], :routes ({:path "/", :method :get, :path-re #"/\Q\E", :path-parts [""], :interceptors [#Interceptor{}], :route-name :home, :path-params []}), :servlet #object[io.pedestal.http.servlet.FnServlet 0x56a6e7f3 "io.pedestal.http.servlet.FnServlet@56a6e7f3"], :server #object[org.eclipse.jetty.server.Server 0x71994ca0 "Server@71994ca0{STARTED}[11.0.20,sto=0]"], :join? false, :stop-fn #function[io.pedestal.http.jetty/server/fn--24552]}
 ```
 
-navigate to http://localhost:8890/ in the browser, we should see something like this.
+Navigate to http://localhost:8890/ in the browser, we should see something like this:
 
 ![](assets/hello-world.png)
 
-Now build the HTML (hiccup) skeleton.
+Now build the HTML (Hiccup) skeleton.
 
 ```clojure
 (ns server
@@ -166,9 +166,9 @@ Now build the HTML (hiccup) skeleton.
                 [:span {:class "badge text-bg-light"} item-status]]])]]]])]])))
 ```
 
-We define `db-example` because we are not going to query Datomic yet (patience). It is great exercise to model how you want the result to be, that will guide you towards how to create the query and even show the strengths or areas of improvement in the schema model. For those familiar with basic HTML we are creating a table. To add the values, loop over the `db-example` which is a vector of maps, each map is a "List", inside the list we have `:list/items` and then loop again to render all the items for each list.
+We define `db-example` because we are not going to query Datomic yet (patience!). It is great exercise to model how you want the result to be, that will guide you towards how to create the query and even show the strengths or areas of improvement in the schema model. For those familiar with basic HTML we are creating a table. To add the values, loop over the `db-example` which is a vector of maps, with each map a "List." Inside the list, we have `:list/items`. Then loop again to render all the items for each list.
 
-Let's glue all things together in one file `src/server.clj`
+Let's glue all things together in one file `src/server.clj`:
 
 ```clojure
 (ns server
@@ -257,18 +257,18 @@ Let's glue all things together in one file `src/server.clj`
   (start-server))
 ```
 
-Load the file to the REPL and then restart the server
+Load the file to the REPL and then restart the server.
 
 ```clojure
 ;; REPL
 (restart-server)
 ```
 
-now let's got to our browser and navigate to http://localhost:8890/ , we should see something like this.
+Now, let's got to our browser and navigate to http://localhost:8890/ , we should see something like this:
 
 ![](assets/part2.png)
 
-Awesome, we have our beautiful UI working, we don't need anything else for now. Next step is to fetch the data from Datomic instead of db-example. Let's go back to the `src/todo_db.clj` file and take a look at the query we use previously to fetch lists and items.
+Awesome, we have our beautiful UI working. We don't need anything else for now. The next step is to fetch the data from Datomic instead of `db-example`. Let's go back to the `src/todo_db.clj` file and take a look at the query we used previously to fetch lists and items.
 
 ```clojure
 (d/q '[:find (pull ?list [:list/name {:list/items [:item/text]}])
@@ -293,7 +293,7 @@ Awesome, we have our beautiful UI working, we don't need anything else for now. 
            #:item{:text "cook rissotto",}]}]]
 ```
 
-It's actually very close to what we want, instead of vectors of maps we have vector of vectors. We want to tell Datomic to bind the results into a collection, we can make use of the [binding forms](https://docs.datomic.com/query/query-data-reference.html#binding-forms), particularly the collection one `[?a ...]` , this tells Datomic to return the results as a collection of the results, it's a way to flatten the results.
+It's actually very close to what we want. Instead of vectors of maps, we have a vector of vectors. We want to tell Datomic to bind the results into a collection. For this, use the [binding forms](https://docs.datomic.com/query/query-data-reference.html#binding-forms), particularly the collection one `[?a ...]`. This tells Datomic to return the results as a collection of the results, as a way to flatten the results.
 
 ```clojure
 (d/q '[:find [(pull ?list [:list/name {:list/items [:item/text]}]) ...]
@@ -301,7 +301,7 @@ It's actually very close to what we want, instead of vectors of maps we have vec
        :where [?list :list/name ?list-name]]
      (d/db conn))
 ```
-> pull is a very powerful API, it's straight forward to pull nested data without the need of joins, Datalog makes the navigation of relationships seamlessly, it has cleaner and simple semantics, codebases tend to be be more expressive and easier to understand.
+> `pull` is a very powerful API. It's straightforward to pull nested data without the need of joins. Datalog makes the navigation of relationships seamless. With cleaner and simple semantics, codebases tend to be be more expressive and easier to understand.
 
 ```clojure
 ;; =>
@@ -319,9 +319,9 @@ It's actually very close to what we want, instead of vectors of maps we have vec
           #:item{:text "cook rissotto",}]}]
 ```
 
-The result is in the form we need, now it's matter of making the query and passing the result to the render function. Before that we create a `lists-page` function that will execute the query and place it inside `todo_db.clj`. We will also add the `:db/id` in our query result because that's the id we will use to update or retract datoms and also include the item status, `:item/status`.
+The result is in the form we need. Now, it's matter of making the query and passing the result to the render function. Before that, we create a `lists-page` function that will execute the query and place it inside `todo_db.clj`. We will also add the `:db/id` in our query result because that's the _id_ we will use to update or retract datoms and also include the item status, `:item/status`.
 
-Add the query to `src/todo_db.clj` save and load the file to the REPL
+Add the query to `src/todo_db.clj` save and load the file to the REPL:
 
 ```clojure
 (defn lists-page [db]
@@ -331,9 +331,9 @@ Add the query to `src/todo_db.clj` save and load the file to the REPL
        db))
 ```
 
-*more about :db/ident [here](https://docs.datomic.com/schema/identity.html#idents)*
+*More about :db/ident [here](https://docs.datomic.com/schema/identity.html#idents)*
 
-In the `server.clj` file we make some modifications to our `all-lists-page` render function.
+In the `server.clj` file, we make some modifications to our `all-lists-page` render function.
 
 ```clojure
 (ns server-experiment
@@ -414,15 +414,17 @@ In the `server.clj` file we make some modifications to our `all-lists-page` rend
   (start-server))
 ```
 
-the `todo-db/list-page` receives a db as parameter, to get the current db in Datomic we call `d/db` which receives a connection and for this project we define the connection inside the `todo-db/conn`. With the query result we just change the value we were passing to the `for` and we should be able to get the same output.
-Load the file to the REPL and call `(restart-server)`
+The `todo-db/list-page` receives a db as parameter, to get the current db in Datomic we call `d/db` which receives a connection and for this project we define the connection inside the `todo-db/conn`. With the query result, we just change the value we were passing to the `for` and we should be able to get the same output.
+
+Load the file to the REPL and call `(restart-server)`:
+
 ```clojure
 ;;REPL
 (restart-server)
 ```
-go to http://localhost:8890/ hit reload and you should see the the items with the status too, all served by Datomic.
+Go to http://localhost:8890/ hit reload and you should see the the items with the status too, all served by Datomic.
 
-### Resources
+## Resources
 
 - [Pedestal routes](http://pedestal.io/pedestal/0.7/guides/defining-routes.html)
 - [Hiccup basic syntax](https://github.com/weavejester/hiccup/wiki/Syntax)
